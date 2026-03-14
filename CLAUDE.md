@@ -5,12 +5,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## 명령어
 
 ```bash
-npm run dev      # 개발 서버 (Turbopack 기본)
-npm run build    # 프로덕션 빌드
-npm run lint     # ESLint 검사 (빌드 시 자동 실행 안 됨, 별도 실행 필요)
+npm run dev           # 개발 서버 (Turbopack 기본)
+npm run build         # 프로덕션 빌드
+npm run lint          # ESLint 검사
+npm run lint:fix      # ESLint 자동 수정
+npm run format        # Prettier 포맷팅
+npm run format:check  # Prettier 포맷 검사
+npm run type-check    # TypeScript 타입 체크 (tsc --noEmit)
+npm run check-all     # 타입 체크 + 린트 + 포맷 검사 통합 실행
 ```
 
 shadcn/ui 컴포넌트 추가:
+
 ```bash
 npx shadcn@latest add [component-name]
 ```
@@ -63,6 +69,7 @@ app/
 ### 폼 처리 (계획 중인 패턴)
 
 `docs/guides/forms-react-hook-form.md` 참고:
+
 - React Hook Form + Zod + Server Actions 조합
 - 서버-클라이언트 이중 검증 필수
 - `useActionState` (React 19)로 서버 액션 상태 관리
@@ -79,6 +86,7 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
 ## 참고 문서
 
 `docs/guides/` 디렉토리에 상세 가이드 있음:
+
 - `nextjs.md` — Next.js 15/16 규칙 (async params/searchParams, `'use cache'`, proxy.ts 등)
 - `component-patterns.md` — Server/Client 경계, CVA 변형, 컴파운드 컴포넌트 패턴
 - `styling-guide.md` — Tailwind 클래스 순서, 다크모드, 색상 시스템
