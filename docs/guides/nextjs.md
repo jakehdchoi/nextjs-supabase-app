@@ -149,22 +149,22 @@ async function SlowChart() {
 ### 🔄 after() API 활용
 
 ```typescript
-import { after } from 'next/server'
+import { after } from "next/server";
 
 export async function POST(request: Request) {
-  const body = await request.json()
+  const body = await request.json();
 
   // 즉시 응답 반환
-  const result = await processUserData(body)
+  const result = await processUserData(body);
 
   // 🔄 비블로킹 작업은 after()로 처리
   after(async () => {
-    await sendAnalytics(result)
-    await updateCache(result.id)
-    await sendNotification(result.userId)
-  })
+    await sendAnalytics(result);
+    await updateCache(result.id);
+    await sendNotification(result.userId);
+  });
 
-  return Response.json({ success: true, id: result.id })
+  return Response.json({ success: true, id: result.id });
 }
 ```
 
@@ -204,33 +204,33 @@ export async function getProductData(id: string) {
   const data = await fetch(`/api/products/${id}`, {
     next: {
       revalidate: 3600, // 1시간 캐시
-      tags: [`product-${id}`, 'products'], // 태그 기반 무효화
+      tags: [`product-${id}`, "products"], // 태그 기반 무효화
     },
-  })
+  });
 
-  return data.json()
+  return data.json();
 }
 
 // 캐시 무효화 (Next.js 16 변경 사항)
-import { revalidateTag } from 'next/cache'
+import { revalidateTag } from "next/cache";
 
 // ⚠️ Breaking Change: 두 번째 인수 필수 (SWR 동작)
-revalidateTag('products', 'max')
+revalidateTag("products", "max");
 
 // ✅ Server Action에서는 updateTag() 사용 (즉시 반영, read-your-writes 보장)
-import { updateTag, refresh } from 'next/cache'
+import { updateTag, refresh } from "next/cache";
 
 export async function updateProduct(id: string, data: ProductData) {
-  'use server'
+  "use server";
 
-  await updateDatabase(id, data)
+  await updateDatabase(id, data);
 
   // updateTag: Server Actions 전용, 즉시 반영
-  updateTag(`product-${id}`)
-  updateTag('products')
+  updateTag(`product-${id}`);
+  updateTag("products");
 
   // refresh: 미캐시 데이터 갱신
-  refresh()
+  refresh();
 }
 ```
 
@@ -250,19 +250,19 @@ next build --webpack
 
 ```typescript
 // next.config.ts - Turbopack 설정은 최상위 turbopack 키 사용
-import type { NextConfig } from 'next'
+import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   cacheComponents: true, // Cache Components 활성화
-  reactCompiler: true,   // React Compiler stable (자동 메모이제이션)
+  reactCompiler: true, // React Compiler stable (자동 메모이제이션)
 
   // Turbopack 설정 (최상위 키, experimental.turbo 아님)
   turbopack: {
     rules: {
       // CSS 모듈 최적화
-      '*.module.css': {
-        loaders: ['css-loader'],
-        as: 'css',
+      "*.module.css": {
+        loaders: ["css-loader"],
+        as: "css",
       },
     },
   },
@@ -271,16 +271,11 @@ const nextConfig: NextConfig = {
     // Filesystem caching (beta)
     turbopackFileSystemCacheForDev: true,
     // 🔄 패키지 import 최적화
-    optimizePackageImports: [
-      'lucide-react',
-      '@radix-ui/react-icons',
-      'date-fns',
-      'lodash-es',
-    ],
+    optimizePackageImports: ["lucide-react", "@radix-ui/react-icons", "date-fns", "lodash-es"],
   },
-}
+};
 
-export default nextConfig
+export default nextConfig;
 ```
 
 ### 🆕 React Compiler (stable)
@@ -295,7 +290,7 @@ npm install babel-plugin-react-compiler@latest
 const nextConfig: NextConfig = {
   reactCompiler: true, // stable, 자동 메모이제이션 — useMemo/useCallback 불필요
   cacheComponents: true,
-}
+};
 ```
 
 ### 🆕 Navigation Hooks (15.3에서 도입)
@@ -389,23 +384,23 @@ Next.js 16에서 `middleware.ts`는 Edge runtime 전용으로 deprecated 됩니�
 
 ```typescript
 // ✅ proxy.ts (Next.js 16 방식)
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from "next/server";
 
 // 기본 export, 함수명은 proxy
 export default function proxy(request: NextRequest) {
   // Node.js API 사용 가능
-  const token = request.cookies.get('auth-token')?.value
+  const token = request.cookies.get("auth-token")?.value;
 
   if (!token) {
-    return NextResponse.redirect(new URL('/login', request.url))
+    return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  return NextResponse.next()
+  return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
-}
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+};
 
 // ❌ 구버전 middleware.ts (deprecated)
 // export const config = { runtime: 'nodejs', ... }
@@ -456,21 +451,21 @@ export default function UserForm() {
 
 ```typescript
 // app/api/admin/route.ts
-import { unauthorized, forbidden } from 'next/server'
+import { unauthorized, forbidden } from "next/server";
 
 export async function GET(request: Request) {
-  const session = await getSession(request)
+  const session = await getSession(request);
 
   if (!session) {
-    return unauthorized()
+    return unauthorized();
   }
 
   if (!session.user.isAdmin) {
-    return forbidden()
+    return forbidden();
   }
 
-  const data = await getAdminData()
-  return Response.json(data)
+  const data = await getAdminData();
+  return Response.json(data);
 }
 ```
 
@@ -492,20 +487,20 @@ app/
 
 ### 제거된 기능
 
-| 기능 | 대체 방법 |
-|------|-----------|
-| AMP 지원 | 완전 제거, HTML/CSS로 최적화 |
-| `serverRuntimeConfig`, `publicRuntimeConfig` | 환경변수(`.env`) 사용 |
-| `images.domains` | `images.remotePatterns` 사용 |
-| `next build` 자동 linting | `npm run lint`를 별도로 실행 |
+| 기능                                         | 대체 방법                    |
+| -------------------------------------------- | ---------------------------- |
+| AMP 지원                                     | 완전 제거, HTML/CSS로 최적화 |
+| `serverRuntimeConfig`, `publicRuntimeConfig` | 환경변수(`.env`) 사용        |
+| `images.domains`                             | `images.remotePatterns` 사용 |
+| `next build` 자동 linting                    | `npm run lint`를 별도로 실행 |
 
 ```typescript
 // ❌ 제거됨
 const nextConfig = {
-  serverRuntimeConfig: { mySecret: 'secret' },
-  publicRuntimeConfig: { staticFolder: '/static' },
-  images: { domains: ['example.com'] },
-}
+  serverRuntimeConfig: { mySecret: "secret" },
+  publicRuntimeConfig: { staticFolder: "/static" },
+  images: { domains: ["example.com"] },
+};
 
 // ✅ 올바른 방법
 // .env 파일에서 환경변수 관리
@@ -514,11 +509,9 @@ const nextConfig = {
 
 const nextConfig = {
   images: {
-    remotePatterns: [
-      { protocol: 'https', hostname: 'example.com', pathname: '/images/**' },
-    ],
+    remotePatterns: [{ protocol: "https", hostname: "example.com", pathname: "/images/**" }],
   },
-}
+};
 ```
 
 ## 🔄 New Features 활용
