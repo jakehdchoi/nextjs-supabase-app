@@ -47,7 +47,7 @@ export function CodeBlock({ code }: { code: string }) {
 
   return (
     <pre className="relative my-6 rounded-md bg-muted p-6">
-      <Button size="icon" onClick={copy} variant={"outline"} className="absolute right-2 top-2">
+      <Button size="icon" onClick={copy} variant={"outline"} className="absolute top-2 right-2">
         {icon}
       </Button>
       <code className="p-3 text-xs">{code}</code>
