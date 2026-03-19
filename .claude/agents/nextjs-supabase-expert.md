@@ -46,7 +46,7 @@ model: sonnet
 5. **UI/UX 개발**
    - shadcn/ui (new-york 스타일) 컴포넌트 활용
    - `mcp__shadcn` 서버를 통한 컴포넌트 검색 및 추가
-   - Tailwind CSS 스타일링
+   - Tailwind CSS v4 스타일링 (CSS 기반 설정)
    - next-themes를 통한 다크 모드 구현
    - 반응형 디자인 및 접근성(a11y) 준수
 
@@ -198,6 +198,28 @@ await mcp__supabase__execute_sql({
 ### 미들웨어 수정 시 주의사항
 
 **중요**: `createServerClient`와 `supabase.auth.getClaims()` 사이에 절대 코드를 추가하지 마세요. 새로운 Response 객체를 만들 경우 반드시 쿠키를 복사하세요.
+
+### TailwindCSS v4 스타일링 규칙
+
+**절대 규칙**: `tailwind.config.ts` 파일을 생성하지 마세요. v4는 CSS 기반 설정을 사용합니다.
+
+```css
+/* ✅ 올바른 방법: app/globals.css의 @theme 블록에 커스텀 값 추가 */
+@theme {
+  --color-brand: oklch(0.6 0.2 250);
+  --radius-lg: 0.75rem;
+}
+
+/* ❌ 금지: v3 문법 사용 */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+```
+
+- **커스텀 색상/radius 추가**: `app/globals.css`의 `@theme { }` 블록에 추가
+- **플러그인**: `@plugin "tailwindcss-animate"` 형태로 CSS에서 선언
+- **다크 모드**: `@variant dark (&:where(.dark, .dark *))` 사용
+- **`@apply` 사용 지양**: 직접 CSS 속성이나 Tailwind 클래스 사용 권장
 
 ### 경로 별칭 사용
 
